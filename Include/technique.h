@@ -2,7 +2,6 @@
 #ifndef  _TECHNIQUE_H_
 #define  _TECHNIQUE_H_
 
-#include "GL/glew.h"
 #include <list>
 #include "mur_util.h"
 #include "glm/glm.hpp"
