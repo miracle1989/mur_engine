@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Model.h"
 
-Model::Model(const std::string & fileName, bool bGammaCorrection = false):m_GammaCorrection(bGammaCorrection)
+void Model::LoadModel(const std::string & fileName, bool bGammaCorrection)
 {
 	Assimp::Importer importer;
 	const aiScene* pSence = importer.ReadFile(fileName.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_FindDegenerates);
@@ -16,8 +16,20 @@ Model::Model(const std::string & fileName, bool bGammaCorrection = false):m_Gamm
 	ProcessNode(pSence->mRootNode, pSence);
 }
 
+Model::Model():m_GammaCorrection(false)
+{
+}
+
 Model::~Model()
 {
+}
+
+void Model::Draw()
+{
+	for (auto mesh : m_Meshes)
+	{
+		mesh.Render();
+	}
 }
 
 void Model::ProcessNode(aiNode* pNode, const aiScene* pScene)
@@ -26,7 +38,12 @@ void Model::ProcessNode(aiNode* pNode, const aiScene* pScene)
 	{
 		aiMesh* pMesh = pScene->mMeshes[pNode->mMeshes[i]];
 
-		ProcessMesh(pMesh, pScene);
+		m_Meshes.push_back(ProcessMesh(pMesh, pScene));
+	}
+
+	for (int i = 0; i < pNode->mNumChildren; i++)
+	{
+		ProcessNode(pNode->mChildren[i], pScene);
 	}
 }
 
@@ -48,16 +65,24 @@ BasicMesh Model::ProcessMesh(const aiMesh* pMesh, const aiScene* pScene)
 		vertex.Normal.y = pMesh->mNormals[i].y;
 		vertex.Normal.z = pMesh->mNormals[i].z;
 
-		vertex.TexCoords.x = pMesh->mTextureCoords[0][i].x;
-		vertex.TexCoords.y = pMesh->mTextureCoords[0][i].y;
+		if (pMesh->mTextureCoords[0] != NULL)
+		{
+			vertex.TexCoords.x = pMesh->mTextureCoords[0][i].x;
+			vertex.TexCoords.y = pMesh->mTextureCoords[0][i].y;
+		}
+		else
+		{
+			vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+		}
 
-		vertex.Tanget.x = pMesh->mTangents[i].x;
-		vertex.Tanget.y = pMesh->mTangents[i].y;
-		vertex.Tanget.z = pMesh->mTangents[i].z;
 
-		vertex.Bitangent.x = pMesh->mBitangents[i].x;
-		vertex.Bitangent.x = pMesh->mBitangents[i].y;
-		vertex.Bitangent.x = pMesh->mBitangents[i].z;
+		//vertex.Tanget.x = pMesh->mTangents[i].x;
+		//vertex.Tanget.y = pMesh->mTangents[i].y;
+		//vertex.Tanget.z = pMesh->mTangents[i].z;
+
+		//vertex.Bitangent.x = pMesh->mBitangents[i].x;
+		//vertex.Bitangent.x = pMesh->mBitangents[i].y;
+		//vertex.Bitangent.x = pMesh->mBitangents[i].z;
 		
 		vertices.push_back(vertex);
 	}
@@ -102,18 +127,18 @@ std::vector<Texture *> Model::LoadMaterialTextures(const aiMaterial* material, c
 		material->GetTexture(type, i, &str);
 
 		//TODO: may cause issue.
-		Texture tex = Texture():;
+//		Texture tex = Texture();
 
 
-		tex.SetType(type);
+//		tex.SetType(type);
 
-		textures.push_back(&tex);
+//		textures.push_back(&tex);
 	}
 
 	return textures;
 }
 
-unsigned int TextureFromFile(const char* texName, const char* Directory)
+void TextureFromFile(const char* texName, const char* Directory)
 {
 	std::string fileName = std::string(Directory) + '/' + std::string(texName);
 

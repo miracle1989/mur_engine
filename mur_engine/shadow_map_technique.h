@@ -5,13 +5,13 @@
 
 #include "technique.h"
 
-class shadow_map_technique : Technique
+class ShadowMapTechnique : public Technique
 {
 public:
 
-	shadow_map_technique();
+	ShadowMapTechnique();
 
-	~shadow_map_technique();
+	~ShadowMapTechnique();
 
 	bool Init();
 

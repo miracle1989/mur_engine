@@ -15,7 +15,7 @@ out vec3 WorldPos0;
 
 void main()
 {
-	gl_Position = gMVP* vec4(Position, 1.0);
+	gl_Position = gMVP * vec4(Position, 1.0);
 	LightSpacePos = gLightMVP * vec4(Position, 1.0);
 	TexCoord0 = TexCoord;
 	Normal0 = (gWorld * vec4(Normal, 0.0)).xyz;

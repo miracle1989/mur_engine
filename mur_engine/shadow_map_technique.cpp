@@ -2,25 +2,25 @@
 #include "shadow_map_technique.h"
 
 
-shadow_map_technique::shadow_map_technique()
+ShadowMapTechnique::ShadowMapTechnique()
 {
 
 }
 
 
-shadow_map_technique::~shadow_map_technique()
+ShadowMapTechnique::~ShadowMapTechnique()
 {
 }
 
-bool shadow_map_technique::Init()
+bool ShadowMapTechnique::Init()
 {
-	if (Technique::Init())
+	if (!Technique::Init())
 		return false;
 
-	if (!AttachShader(GL_VERTEX_SHADER, "shadow_map.vs"))
+	if (!AttachShader(GL_VERTEX_SHADER, "../shaders/shadow_map.vs"))
 		return false;
 
-	if (!AttachShader(GL_FRAGMENT_SHADER, "shadow_map.ps"))
+	if (!AttachShader(GL_FRAGMENT_SHADER, "../shaders/shadow_map.ps"))
 		return false;
 
 	if (!LinkProgram())
@@ -35,12 +35,12 @@ bool shadow_map_technique::Init()
 	return true;
 }
 
-void shadow_map_technique::SetMVP(const glm::mat4& mvp)
+void ShadowMapTechnique::SetMVP(const glm::mat4& mvp)
 {
 	glUniformMatrix4fv(m_MVPLocation, 1, GL_TRUE, &mvp[0][0]);
 }
 
-void shadow_map_technique::SetTextureUnit(GLenum unit)
+void ShadowMapTechnique::SetTextureUnit(GLenum unit)
 {
 	glUniform1i(m_TextureLocation, unit);
 }

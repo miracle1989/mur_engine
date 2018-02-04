@@ -1,7 +1,4 @@
-﻿  stdafx.cpp
-  mur_engine.cpp
-  texture.cpp
-  technique.cpp
-  mur_util.cpp
-  正在生成代码...
-LINK : fatal error LNK1104: 无法打开文件“freeglut.lib”
+﻿  mur_engine.cpp
+e:\graphics_projects\mur_engine\mur_engine\mur_engine.cpp(153): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+  mur_engine.vcxproj -> E:\graphics_projects\mur_engine\Debug\mur_engine.exe
+  mur_engine.vcxproj -> E:\graphics_projects\mur_engine\Debug\mur_engine.pdb (Full PDB)

@@ -65,7 +65,7 @@ public:
 };
 
 
-class LightingTechnique:Technique
+class LightingTechnique : public Technique
 {
 public:
 
@@ -88,7 +88,7 @@ public:
 
 	void SetShadowMapTextureUnit(GLenum unit);
 
-	void SetDirectionalLight(unsigned int numLights, const DirectionalLight* light);
+	void SetDirectionalLight(unsigned int numLights, const DirectionalLight& light);
 
 	void SetPointLight(unsigned int numLights, const PointLight* light);
 

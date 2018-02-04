@@ -48,7 +48,7 @@ bool Technique::AttachShader(GLenum ShaderType, const char * pFileName)
 
 	const char* source = s.c_str();
 	GLint size = s.size();
-	glShaderSource(ShaderType, 1, &source, &size);
+	glShaderSource(shaderObj, 1, &source, NULL);
 	glCompileShader(shaderObj);
 
 	GLint success;

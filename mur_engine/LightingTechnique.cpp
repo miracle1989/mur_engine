@@ -15,23 +15,40 @@ bool LightingTechnique::Init()
 	if (!Technique::Init())
 		return false;
 
-	if (!AttachShader(GL_VERTEX_SHADER, "lighting.vs"))
+	if (!AttachShader(GL_VERTEX_SHADER, "../shaders/lighting.vs"))
 		return false;
 
-	if (!AttachShader(GL_FRAGMENT_SHADER, "lighting.ps"))
+	if (!AttachShader(GL_FRAGMENT_SHADER, "../shaders/lighting.ps"))
 		return false;
 
 	if (!LinkProgram())
 		return false;
 
 	m_MVPLocation = GetUniformLocation("gMVP");
+
 	m_LightMVPLocation = GetUniformLocation("gLightMVP");
 	m_WorldMatrixLocation = GetUniformLocation("gWorld");
 	m_TextureSamplerLocation = GetUniformLocation("gSampler");
 	m_ShadowMapLocation = GetUniformLocation("gShadowMap");
 	m_EyeWorldPosLocation = GetUniformLocation("gEyeWorldPos");
-	m_SpecularIntensityLocation = GetUniformLocation("gSpecularIntensity");
+	m_SpecularIntensityLocation = GetUniformLocation("gMatSpecularIntensity");
 	m_SpecularPowerLocation = GetUniformLocation("gSpecularPower");
+
+	{
+		m_DirectionalLightLocation.Color = GetUniformLocation("gDirectionalLight.Base.Color");
+		m_DirectionalLightLocation.AmbientIntensity = GetUniformLocation("gDirectionalLight.Base.AmbientIntensity");
+		m_DirectionalLightLocation.DiffuseIntensity = GetUniformLocation("gDirectionalLight.Base.DiffuseIntensity");
+		m_DirectionalLightLocation.Direction = GetUniformLocation("gDirectionalLight.Direction");
+
+		if (m_DirectionalLightLocation.Color == INVALIDATE_LOCATION ||
+			m_DirectionalLightLocation.AmbientIntensity == INVALIDATE_LOCATION ||
+			m_DirectionalLightLocation.DiffuseIntensity == INVALIDATE_LOCATION ||
+			m_DirectionalLightLocation.Direction == INVALIDATE_LOCATION)
+		{
+			MUR_ERROR("%s invalidata location", __function__);
+			return false;
+		}
+	}
 
 	for (unsigned int i = 0; i < ARRAYSIZE(m_PointLightLocation); i++)
 	{
@@ -44,7 +61,7 @@ bool LightingTechnique::Init()
 		snprintf(name, sizeof(name), "gPointLight[%d].Base.AmbientIntensity", i);
 		m_PointLightLocation[i].AmbientIntensity = GetUniformLocation(name);
 
-		snprintf(name, sizeof(name), "gPointLight[%d].Base.Position", i);
+		snprintf(name, sizeof(name), "gPointLight[%d].Pos", i);
 		m_PointLightLocation[i].Pos = GetUniformLocation(name);
 
 		snprintf(name, sizeof(name), "gPointLight[%d].Base.DiffuseIntensity", i);
@@ -77,16 +94,16 @@ bool LightingTechnique::Init()
 		char name[128];
 		memset(name, 0, sizeof(name));
 
-		snprintf(name, sizeof(name), "gSpotLight[%d].Base.Color", i);
+		snprintf(name, sizeof(name), "gSpotLight[%d].Base.Base.Color", i);
 		m_SpotLightLocaiton[i].Color = GetUniformLocation(name);
 
-		snprintf(name, sizeof(name), "gSpotLight[%d].Base.AmbientIntensity", i);
+		snprintf(name, sizeof(name), "gSpotLight[%d].Base.Base.AmbientIntensity", i);
 		m_SpotLightLocaiton[i].AmbientIntensity = GetUniformLocation(name);
 
-		snprintf(name, sizeof(name), "gSpotLight[%d].Base.Position", i);
+		snprintf(name, sizeof(name), "gSpotLight[%d].Base.Pos", i);
 		m_SpotLightLocaiton[i].Pos = GetUniformLocation(name);
 
-		snprintf(name, sizeof(name), "gSpotLight[%d].Base.DiffuseIntensity", i);
+		snprintf(name, sizeof(name), "gSpotLight[%d].Base.Base.DiffuseIntensity", i);
 		m_SpotLightLocaiton[i].DiffuseIntensity = GetUniformLocation(name);
 
 		snprintf(name, sizeof(name), "gSpotLight[%d].Direction", i);
@@ -95,13 +112,13 @@ bool LightingTechnique::Init()
 		snprintf(name, sizeof(name), "gSpotLight[%d].CutOff", i);
 		m_SpotLightLocaiton[i].CutOff = GetUniformLocation(name);
 
-		snprintf(name, sizeof(name), "gSpotLight[%d].Atten.Constant", i);
+		snprintf(name, sizeof(name), "gSpotLight[%d].Base.Atten.Constant", i);
 		m_SpotLightLocaiton[i].Atten.Constant = GetUniformLocation(name);
 
-		snprintf(name, sizeof(name), "gSpotLight[%d].Atten.Linear", i);
+		snprintf(name, sizeof(name), "gSpotLight[%d].Base.Atten.Linear", i);
 		m_SpotLightLocaiton[i].Atten.Linear = GetUniformLocation(name);
 
-		snprintf(name, sizeof(name), "gSpotLight[i].Atten.Exp", i);
+		snprintf(name, sizeof(name), "gSpotLight[%d].Base.Atten.Exp", i);
 		m_SpotLightLocaiton[i].Atten.Exp = GetUniformLocation(name);
 
 		if (m_SpotLightLocaiton[i].Color == INVALIDATE_LOCATION ||
@@ -125,17 +142,17 @@ bool LightingTechnique::Init()
 
 void LightingTechnique::SetMVP(const glm::mat4 & mvp)
 {
-	glUniformMatrix4fv(m_MVPLocation, 1, GL_TRUE, &mvp[0][0]);
+	glUniformMatrix4fv(m_MVPLocation, 1, GL_FALSE, &mvp[0][0]);
 }
 
 void LightingTechnique::SetLightMVP(const glm::mat4 & mvp)
 {
-	glUniformMatrix4fv(m_LightMVPLocation, 1, GL_TRUE, &mvp[0][0]);
+	glUniformMatrix4fv(m_LightMVPLocation, 1, GL_FALSE, &mvp[0][0]);
 }
 
 void LightingTechnique::SetWorldMatrix(const glm::mat4 & w)
 {
-	glUniformMatrix4fv(m_WorldMatrixLocation, 1, GL_TRUE, &w[0][0]);
+	glUniformMatrix4fv(m_WorldMatrixLocation, 1, GL_FALSE, &w[0][0]);
 }
 
 void LightingTechnique::SetTextureUnit(GLenum unit)
@@ -148,14 +165,14 @@ void LightingTechnique::SetShadowMapTextureUnit(GLenum unit)
 	glUniform1i(m_ShadowMapLocation, unit);
 }
 
-void LightingTechnique::SetDirectionalLight(unsigned int numLights, const DirectionalLight * light)
+void LightingTechnique::SetDirectionalLight(unsigned int numLights, const DirectionalLight&  light)
 {
-	glUniform3f(m_DirectionalLightLocation.Color, light->Color.x, light->Color.y, light->Color.z);
-	glUniform1f(m_DirectionalLightLocation.AmbientIntensity, light->AmbientIntensity);
-	glUniform1f(m_DirectionalLightLocation.DiffuseIntensity, light->DiffuseIntensity);
+	glUniform3f(m_DirectionalLightLocation.Color, light.Color.x, light.Color.y, light.Color.z);
+	glUniform1f(m_DirectionalLightLocation.AmbientIntensity, light.AmbientIntensity);
+	glUniform1f(m_DirectionalLightLocation.DiffuseIntensity, light.DiffuseIntensity);
 
-	glm::vec3 Direction = light->Direction;
-	glm::normalize(Direction);
+	glm::vec3 Direction = light.Direction;
+	Direction = glm::normalize(Direction);
 	glUniform3f(m_DirectionalLightLocation.Direction, Direction.x, Direction.y, Direction.z);
 }
 

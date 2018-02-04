@@ -14,10 +14,13 @@ public:
 
 	bool m_GammaCorrection;
 
-	Model(const std::string& file, bool bGammaCorrection = false);
+	void LoadModel(const std::string& file, bool bGammaCorrection = false);
 	
+	Model();
+
 	~Model();
 
+	void Draw();
 
 private:
 	void ProcessNode(aiNode* pNode, const aiScene* pScene);
