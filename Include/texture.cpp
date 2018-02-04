@@ -2,11 +2,8 @@
 #include <assert.h>
 
 
-Texture::Texture(GLenum target, std::string & path)
+Texture::Texture(GLenum target, std::string & path):m_Target(target), m_Path(path), m_Type(aiTextureType_NONE)
 {
-	m_Target = target;
-	m_Path = path;
-	m_Type = -1;
 }
 
 Texture::Texture(GLenum target, aiTextureType type, std::string & path)
@@ -65,7 +62,7 @@ int Texture::GetType()
 	return m_Type;
 }
 
-int Texture::SetType(aiTextureType type)
+void Texture::SetType(aiTextureType type)
 {
-	m
+	m_Type = type;
 }
