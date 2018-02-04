@@ -23,8 +23,8 @@ BasicMesh::~BasicMesh()
 
 	if (m_VAO != 0)
 	{
-		glDeleteVertexArrays(1, &m_VAO);
-		m_VAO = 0;
+//		glDeleteVertexArrays(1, &m_VAO);
+//		m_VAO = 0;
 	}
 }
 
@@ -76,12 +76,14 @@ void BasicMesh::Render()
 		m_Textures[i]->Bind(texUint);
 	}
 
+	GLCheckError();
 	glBindVertexArray(m_VAO);
 
+	bool ret = glIsVertexArray(m_VAO);
+	GLCheckError();
 	glDrawElements(GL_TRIANGLES, m_Indices.size(), GL_UNSIGNED_INT, (void*)0);
 
 	glBindVertexArray(0);
-
 }
 
 bool BasicMesh::InitFromSence(const aiScene * pSence, const std::string & fileName)
@@ -99,21 +101,21 @@ void BasicMesh::SetupMesh()
 	glGenBuffers(1, &IBO);
 
 	glBindVertexArray(m_VAO);
-
+	GLenum error = glGetError();
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, m_Vertexs.size() * sizeof(Vertex), &m_Vertexs[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, m_Vertexs.size() * sizeof(Vertex), m_Vertexs.begin()._Ptr, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Indices.size() * sizeof(unsigned int), &m_Indices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Indices.size() * sizeof(unsigned int), m_Indices.begin()._Ptr, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Position));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
 
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
 
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tanget));
@@ -121,5 +123,8 @@ void BasicMesh::SetupMesh()
 	glEnableVertexAttribArray(4);
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
 
+	bool ret = glIsVertexArray(m_VAO);
+
+	error = glGetError();
 	glBindVertexArray(0);
 }
