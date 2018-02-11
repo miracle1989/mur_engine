@@ -17,7 +17,7 @@ bool ShadowMapFBO::Init(unsigned int width, unsigned int height)
 	glGenFramebuffers(1, &m_FBO);
 
 	glBindTexture(GL_TEXTURE_2D, m_ShadowMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_Width, m_Height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, (void*)0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, (void*)0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -36,6 +36,8 @@ bool ShadowMapFBO::Init(unsigned int width, unsigned int height)
 		MUR_ERROR("shadow map fbo incomplete");
 		return false;
 	}
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	return true;
 }

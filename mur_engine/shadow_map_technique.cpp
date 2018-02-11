@@ -27,9 +27,8 @@ bool ShadowMapTechnique::Init()
 		return false;
 
 	m_MVPLocation = GetUniformLocation("gMVP");
-	m_TextureLocation = GetUniformLocation("gShadowMap");
 
-	if(m_MVPLocation == INVALIDATE_LOCATION || m_TextureLocation == INVALIDATE_LOCATION)
+	if(m_MVPLocation == INVALIDATE_LOCATION)
 		return false;
 
 	return true;
