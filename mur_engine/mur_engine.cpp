@@ -118,8 +118,9 @@ public:
 		m_LightTech.SetEyeWorldPos(m_Camera.GetPos());
 		m_LightTech.SetMVP(projMat * viewMat * modelMat);
 		m_LightTech.SetWorldMatrix(modelMat);
+		m_LightTech.SetLightMVP(m_shadowTech.GetMVP() * modelMat);
 
-		//		m_Quad.Draw();
+		m_Quad.Draw();
 		m_Model.Draw();
 	}
 

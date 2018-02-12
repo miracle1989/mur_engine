@@ -18,12 +18,16 @@ public:
 	void SetMVP(const glm::mat4& mat);
 	
 	void SetTextureUnit(GLenum unit);
+	
+	glm::mat4 GetMVP();
 
 private:
 	
-	GLuint m_MVPLocation;
+	glm::mat4  m_LightMVP;
+
+	GLuint     m_MVPLocation;
 	
-	GLuint m_TextureLocation;
+	GLuint     m_TextureLocation;
 };
 
 #endif // !_SHADOW_MAP_TECHNIQUE_

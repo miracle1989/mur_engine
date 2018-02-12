@@ -36,10 +36,16 @@ bool ShadowMapTechnique::Init()
 
 void ShadowMapTechnique::SetMVP(const glm::mat4& mvp)
 {
+	m_LightMVP = mvp;
 	glUniformMatrix4fv(m_MVPLocation, 1, GL_FALSE, &mvp[0][0]);
 }
 
 void ShadowMapTechnique::SetTextureUnit(GLenum unit)
 {
 	glUniform1i(m_TextureLocation, unit);
+}
+
+glm::mat4 ShadowMapTechnique::GetMVP()
+{
+	return m_LightMVP;
 }
