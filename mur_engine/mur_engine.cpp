@@ -191,6 +191,8 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
+		printf("FPS %f \n", 1/deltaTime);
+
 		GLCheckError();
 		app.Run();
 
